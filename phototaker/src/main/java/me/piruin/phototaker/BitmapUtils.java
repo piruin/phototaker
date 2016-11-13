@@ -18,14 +18,32 @@ package me.piruin.phototaker;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 final class BitmapUtils {
+
+  static Uri getImageUrlWithAuthority(Context context, Uri uri) {
+    InputStream is = null;
+    if (uri.getAuthority() != null) {
+      try {
+        is = context.getContentResolver().openInputStream(uri);
+        Bitmap bmp = BitmapFactory.decodeStream(is);
+        return getImageUri(context, bmp, "Title");
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } finally {
+        try {
+          is.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return null;
+  }
 
   static Uri getImageUri(Context context, Bitmap image, String title) {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();

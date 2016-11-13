@@ -119,7 +119,7 @@ public class PhotoTaker {
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK) {
-      Log.e(TAG, "blayzupe Result Not OK!!!");
+      Log.e(TAG, "blayzupe Result Not OK!!! "+Activity.RESULT_FIRST_USER);
       return;
     }
 
@@ -137,8 +137,12 @@ public class PhotoTaker {
         Uri dataUri = data.getData();
 
         if (dataUri != null) {
-          if (dataUri.getScheme().trim().equalsIgnoreCase("content"))
-            doCropImage(data.getData());
+          if (dataUri.getScheme().trim().equalsIgnoreCase("content")) {
+            Log.d(TAG, "onActivityResult: authority = "+dataUri.getAuthority());
+            if (!dataUri.getAuthority().equalsIgnoreCase("media"))
+              dataUri = BitmapUtils.getImageUrlWithAuthority(mActivity, dataUri);
+            doCropImage(dataUri);
+          }
 
             // if Scheme URI is File then scan for content then Crop it!
           else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
