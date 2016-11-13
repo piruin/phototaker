@@ -181,8 +181,7 @@ public class PhotoTaker {
       CropIntent intent = new CropIntent(mCropUri);
 
       List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
-      int size = list.size();
-      if (size > 0) {
+      if (list.size() > 0) {
         Log.w(TAG, "blayzupe Found Crop Intent");
         mActivity.startActivityForResult(intent, CROP_IMAGE);
         return true;
@@ -258,7 +257,7 @@ public class PhotoTaker {
       intent.setType("image/*");
 
       // Use external Crop Intent if found
-      if (findCropActivity()) {
+      if (CropIntent.hasSupportActivity(mActivity)) {
         Log.d(TAG, "blayzupe doPickImage() Found");
         intent.putExtra("return-data", return_data);
 
@@ -284,13 +283,6 @@ public class PhotoTaker {
       anfe.printStackTrace();
       return false;
     }
-  }
-
-  private boolean findCropActivity() {
-    Intent intent = new Intent("com.android.camera.action.CROP");
-    intent.setType("image/*");
-    List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
-    return (list.size() > 0) ? true : false;
   }
 
   public interface OnCropFinishListener {

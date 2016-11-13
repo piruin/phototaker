@@ -16,8 +16,11 @@
 
 package me.piruin.phototaker;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import java.util.List;
 
 public class CropIntent extends Intent {
 
@@ -41,5 +44,12 @@ public class CropIntent extends Intent {
     putExtra("outputY", outputY);
     putExtra("scale", scale);
     putExtra("return-data", return_data);
+  }
+
+  public static boolean hasSupportActivity(Context context) {
+    Intent intent = new Intent(ACTION);
+    intent.setType("image/*");
+    List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
+    return (list.size() > 0) ? true : false;
   }
 }
