@@ -26,21 +26,13 @@ import java.io.*;
 final class BitmapUtils {
 
   static Uri getImageUrlWithAuthority(Context context, Uri uri) {
-    InputStream is = null;
-    if (uri.getAuthority() != null) {
-      try {
-        is = context.getContentResolver().openInputStream(uri);
-        Bitmap bmp = BitmapFactory.decodeStream(is);
-        return getImageUri(context, bmp, "Title");
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      } finally {
-        try {
-          is.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
+    try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+      Bitmap bmp = BitmapFactory.decodeStream(is);
+      return getImageUri(context, bmp, "Title");
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return null;
   }
@@ -50,6 +42,15 @@ final class BitmapUtils {
     image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
     String path = Media.insertImage(context.getContentResolver(), image, title, null);
     return Uri.parse(path);
+  }
+
+  static Bitmap getBitmapFromUri(Context context, Uri uri) {
+    try {
+      return Media.getBitmap(context.getContentResolver(), uri);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   static boolean writeBitmapToFile(Bitmap bitmap, File file) {

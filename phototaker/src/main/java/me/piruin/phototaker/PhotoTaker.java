@@ -159,14 +159,21 @@ public class PhotoTaker {
         getFile(mDirectory, mTemp).delete();
 
         Bundle extras = data.getExtras();
+        File output = getFile(mDirectory, mOutput);
         if (extras != null) {
 
           // get data to Bitmap then write to file
           Bitmap croppedImg = extras.getParcelable("data");
-          File output = getFile(mDirectory, mOutput);
           mCropUri = BitmapUtils.getImageUri(mActivity, croppedImg, mOutput);
           if (mOnFinishListener != null)
             mOnFinishListener.OnCropFinsh(output.getAbsolutePath(), mCropUri);
+        }
+        Uri crop = data.getData();
+        if (crop != null) {
+          Log.d(TAG, "onActivityResult: crop data uri="+crop.toString());
+          Bitmap image = BitmapUtils.getBitmapFromUri(mActivity, crop);
+          if (mOnFinishListener != null)
+            mOnFinishListener.OnCropFinsh(output.getAbsolutePath(), crop);
         }
       }
       break;
