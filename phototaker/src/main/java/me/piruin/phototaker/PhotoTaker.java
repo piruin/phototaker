@@ -174,43 +174,21 @@ public class PhotoTaker {
 
   public boolean doCropImage(Uri uri) {
     try {
-      // If filter out file Scheme URI.
-      //            if (uri.getScheme().trim().equalsIgnoreCase("file")) {
-      //                Log.e(TAG, "blayzupe doCropImage(Uri) "
-      //                    + "Support only \'Content\' Scheme URI");
-      //                return false;
-      //            }
-
       // set CropUri for use in onActivityResult Method.
-      mCropUri = uri;
       Log.w(TAG, "blayzupe Start doCropImage(Uri uri) "+"uri="+uri.toString());
 
-      Intent intent = new Intent(PhotoTaker.ACTION_CROP_IMAGE);
-      intent.setDataAndType(uri, "image/*");
-      //            intent.setType("image/*");
-      //            intent.setData(uri);
+      mCropUri = uri;
+      CropIntent intent = new CropIntent(mCropUri);
 
-      // Check for Crop Intent that Support Content URI.
       List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
       int size = list.size();
       if (size > 0) {
-
-        // Set Parameter(Extra) for Crop Intent.
         Log.w(TAG, "blayzupe Found Crop Intent");
-        intent.putExtra("noFaceDetection", !faceDetection);
-        intent.putExtra("aspectX", aspectX);
-        intent.putExtra("aspectY", aspectY);
-        intent.putExtra("outputX", outputX);
-        intent.putExtra("outputY", outputY);
-        intent.putExtra("scale", scale);
-        intent.putExtra("return-data", return_data);
-
         mActivity.startActivityForResult(intent, CROP_IMAGE);
         return true;
       } else {
         Log.e(TAG, "blayzupe doCropImage(Uri)"+" Not Found Support Crop Activity");
         Log.e(TAG, "URI : "+uri.toString());
-        // Don't forget to delete your temp file;
         getFile(mDirectory, mTemp).delete();
         return false;
       }
