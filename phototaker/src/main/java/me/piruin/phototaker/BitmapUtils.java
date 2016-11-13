@@ -21,13 +21,27 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-public final class MediaUriUtils {
+final class BitmapUtils {
 
-  public static Uri getImageUri(Context context, Bitmap image, String title) {
+  static Uri getImageUri(Context context, Bitmap image, String title) {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
     String path = Media.insertImage(context.getContentResolver(), image, title, null);
     return Uri.parse(path);
+  }
+
+  static boolean writeBitmapToFile(Bitmap bitmap, File file) {
+    try (FileOutputStream fops = new FileOutputStream(file);) {
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fops);
+      fops.flush();
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
   }
 }

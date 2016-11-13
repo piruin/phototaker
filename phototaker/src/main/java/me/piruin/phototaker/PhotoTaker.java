@@ -29,14 +29,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 public class PhotoTaker {
 
-  public static final String CODE_VERSION = "1.0";
   public static final String ACTION_CROP_IMAGE = "com.android.camera.action.CROP";
   public static final String TEMP_PREFIX = "tmp_";
   public static final int IMAGE_CAPTURE = 30;
@@ -59,16 +56,15 @@ public class PhotoTaker {
   private OnCropFinishListener mOnFinishListener;
   private OnNotFoundCropIntentListener mNotFoundCropIntentListener;
   private Uri mCropUri;
-  private MediaUriFinder.MediaScannedListener mScanner = new MediaUriFinder.MediaScannedListener() {
+  private ContentUriScanner.OnScannedListener mScanner = new ContentUriScanner.OnScannedListener() {
 
-    @Override public boolean OnScanned(Uri uri) {
+    @Override public void OnScanned(Uri uri) {
       /*
        * Start Crop Activity with URI that we get once scanned if not
 	     * found Support Crop Activity then run OnNotFoundCropIntent()
 	     */
       if (!doCropImage(uri) && mNotFoundCropIntentListener != null)
         mNotFoundCropIntentListener.OnNotFoundCropIntent(mDirectory.getAbsolutePath(), mCropUri);
-      return false;
     }
   };
 
@@ -117,64 +113,63 @@ public class PhotoTaker {
     mOnFinishListener = listener;
   }
 
-  public void setNotFoundCropIntentListener(
-    OnNotFoundCropIntentListener listener)
-  {
+  public void setNotFoundCropIntentListener(OnNotFoundCropIntentListener listener) {
     mNotFoundCropIntentListener = listener;
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (resultCode == Activity.RESULT_OK) {
-      switch (requestCode) {
-        case IMAGE_CAPTURE:
-          Log.e(TAG, "blayzupe IMAGE_CAPTURE");
-          final File tempFile = getFile(mDirectory, mTemp);
-          Log.d(TAG, "blayzupe tempfile="+tempFile.getAbsolutePath());
+    if (resultCode != Activity.RESULT_OK) {
+      Log.e(TAG, "blayzupe Result Not OK!!!");
+      return;
+    }
 
-          // Create MediaUriScanner to find your Content URI of File
-          MediaUriFinder.create(mActivity, tempFile.getAbsolutePath(), mScanner);
-          break;
-        case PICK_FROM_FILE:
-          Log.e(TAG, "blayzupe PICK_IMAGE");
-          Uri dataUri = data.getData();
+    switch (requestCode) {
+      case IMAGE_CAPTURE:
+        Log.e(TAG, "blayzupe IMAGE_CAPTURE");
+        final File tempFile = getFile(mDirectory, mTemp);
+        Log.d(TAG, "blayzupe tempfile="+tempFile.getAbsolutePath());
 
-          if (dataUri != null) {
-            if (dataUri.getScheme().trim().equalsIgnoreCase("content"))
-              doCropImage(data.getData());
+        // Create MediaUriScanner to find your Content URI of File
+        new ContentUriScanner(mActivity, mScanner).scan(tempFile.getAbsolutePath());
+        break;
+      case PICK_FROM_FILE:
+        Log.e(TAG, "blayzupe PICK_IMAGE");
+        Uri dataUri = data.getData();
 
-              // if Scheme URI is File then scan for content then Crop it!
-            else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
-              Log.d(TAG, "blayzupe search for Media Content of path="+dataUri.getPath());
-              MediaUriFinder.create(mActivity, dataUri.getPath(), mScanner);
-            }
-          } else {
-            Log.e(TAG, "blayzupe DATA IS NULL");
+        if (dataUri != null) {
+          if (dataUri.getScheme().trim().equalsIgnoreCase("content"))
+            doCropImage(data.getData());
+
+            // if Scheme URI is File then scan for content then Crop it!
+          else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
+            Log.d(TAG, "blayzupe search for Media Content of path="+dataUri.getPath());
+            new ContentUriScanner(mActivity, mScanner).scan(dataUri.getPath());
           }
-          break;
-        case CROP_IMAGE: {
-
-          Log.e(TAG, "blayzupe CROP_IMAGE");
-          getFile(mDirectory, mTemp).delete();
-
-          Bundle extras = data.getExtras();
-          if (extras != null) {
-
-            // get data to Bitmap then write to file
-            Bitmap croppedImg = extras.getParcelable("data");
-            File output = getFile(mDirectory, mOutput);
-            mCropUri = MediaUriUtils.getImageUri(mActivity, croppedImg, mOutput);
-            if (mOnFinishListener != null)
-              mOnFinishListener.OnCropFinsh(output.getAbsolutePath(), mCropUri);
-          }
+        } else {
+          Log.e(TAG, "blayzupe DATA IS NULL");
         }
         break;
-        default:
-          Log.e(TAG, "blayzupe Result some thing");
-          break;
-      }// end Switch case
-    } else {
-      Log.e(TAG, "blayzupe Result Not OK!!!");
-    }
+      case CROP_IMAGE: {
+
+        Log.e(TAG, "blayzupe CROP_IMAGE");
+        getFile(mDirectory, mTemp).delete();
+
+        Bundle extras = data.getExtras();
+        if (extras != null) {
+
+          // get data to Bitmap then write to file
+          Bitmap croppedImg = extras.getParcelable("data");
+          File output = getFile(mDirectory, mOutput);
+          mCropUri = BitmapUtils.getImageUri(mActivity, croppedImg, mOutput);
+          if (mOnFinishListener != null)
+            mOnFinishListener.OnCropFinsh(output.getAbsolutePath(), mCropUri);
+        }
+      }
+      break;
+      default:
+        Log.e(TAG, "blayzupe Result some thing");
+        break;
+    }// end Switch case
   }
 
   public boolean doCropImage(Uri uri) {
@@ -320,36 +315,11 @@ public class PhotoTaker {
     return (list.size() > 0) ? true : false;
   }
 
-  private boolean writeBitmapToFile(Bitmap bitmap, File file) {
-    try {
-      FileOutputStream fops = new FileOutputStream(file);
-      bitmap.compress(CompressFormat.JPEG, 100, fops);
-      fops.flush();
-      fops.close();
-      fops = null;
-      return true;
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
+  public interface OnCropFinishListener {
+    boolean OnCropFinsh(String path, Uri uri);
   }
 
-  @Override protected void finalize() throws Throwable {
-    mActivity = null;
-    mCropUri = null;
-    mOnFinishListener = null;
-    mNotFoundCropIntentListener = null;
-    super.finalize();
-  }
-
-  public static interface OnCropFinishListener {
-    public boolean OnCropFinsh(String path, Uri uri);
-  }
-
-  public static interface OnNotFoundCropIntentListener {
-    public boolean OnNotFoundCropIntent(String path, Uri uri);
+  public interface OnNotFoundCropIntentListener {
+    boolean OnNotFoundCropIntent(String path, Uri uri);
   }
 }
