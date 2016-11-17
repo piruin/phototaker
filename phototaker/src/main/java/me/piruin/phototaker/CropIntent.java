@@ -25,11 +25,8 @@ import java.util.List;
 public class CropIntent extends Intent {
 
   public static final String ACTION = "com.android.camera.action.CROP";
+  public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
 
-  private int outputX = 240;
-  private int outputY = 240;
-  private int aspectX = 1;
-  private int aspectY = 1;
   private boolean return_data = true;
   private boolean scale = true;
   private boolean faceDetection = true;
@@ -38,12 +35,16 @@ public class CropIntent extends Intent {
     super(ACTION);
     setDataAndType(uri, "image/*");
     putExtra("noFaceDetection", faceDetection);
-    putExtra("aspectX", aspectX);
-    putExtra("aspectY", aspectY);
-    putExtra("outputX", outputX);
-    putExtra("outputY", outputY);
     putExtra("scale", scale);
     putExtra("return-data", return_data);
+    setOutput(DEFAULT_SIZE);
+  }
+
+  public void setOutput(PhotoSize size) {
+    putExtra("aspectX", size.widthRatio());
+    putExtra("aspectY", size.heightRatio());
+    putExtra("outputX", size.width);
+    putExtra("outputY", size.height);
   }
 
   public static boolean hasSupportActivity(Context context) {
