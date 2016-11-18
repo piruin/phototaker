@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class PhotoTaker {
-
-  public static final String ACTION_CROP_IMAGE = "com.android.camera.action.CROP";
   public static final String TEMP_PREFIX = "tmp_";
   public static final int IMAGE_CAPTURE = 30;
   public static final int CROP_IMAGE = 31;
@@ -67,10 +65,10 @@ public class PhotoTaker {
         mNotFoundCropIntentListener.OnNotFoundCropIntent(mDirectory.getAbsolutePath(), mCropUri);
     }
   };
+  private PhotoSize photoSize;
+  private PhotoTakerListener listener;
 
-  public PhotoTaker(
-    Activity activity, String path, String name, OnCropFinishListener listener)
-  {
+  public PhotoTaker(Activity activity, String path, String name, OnCropFinishListener listener) {
     this(activity, path, name);
     mOnFinishListener = listener;
   }
@@ -79,6 +77,11 @@ public class PhotoTaker {
   public PhotoTaker(Activity activity, String path, String name) {
     mActivity = activity;
     setOutput(path, name);
+  }
+
+  public PhotoTaker(Activity activity, PhotoSize photoSize) {
+    mActivity = activity;
+    this.photoSize = photoSize;
   }
 
   public void setOutput(String path, String name) {
@@ -118,8 +121,13 @@ public class PhotoTaker {
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (resultCode == Activity.RESULT_CANCELED){
+      onResultCanceled(requestCode);
+      return;
+    }
+
     if (resultCode != Activity.RESULT_OK) {
-      Log.e(TAG, "blayzupe Result Not OK!!! "+Activity.RESULT_FIRST_USER);
+      onResultNotOk(requestCode);
       return;
     }
 
@@ -177,10 +185,25 @@ public class PhotoTaker {
         }
       }
       break;
-      default:
-        Log.e(TAG, "blayzupe Result some thing");
-        break;
-    }// end Switch case
+    }
+  }
+
+  private void onResultCanceled(int requestCode) {
+    switch (requestCode) {
+      case IMAGE_CAPTURE:
+      case PICK_FROM_FILE:
+      case CROP_IMAGE:
+        listener.onCancel(requestCode);
+    }
+  }
+
+  private void onResultNotOk(int requestCode) {
+    switch (requestCode) {
+      case IMAGE_CAPTURE:
+      case PICK_FROM_FILE:
+      case CROP_IMAGE:
+        listener.onError(requestCode);
+    }
   }
 
   public boolean doCropImage(Uri uri) {
@@ -294,6 +317,10 @@ public class PhotoTaker {
       anfe.printStackTrace();
       return false;
     }
+  }
+
+  public void setListener(PhotoTakerListener listener) {
+    this.listener = listener;
   }
 
   public interface OnCropFinishListener {
