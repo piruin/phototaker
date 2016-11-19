@@ -18,8 +18,10 @@
 package me.piruin.phototaker.sample;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,7 +38,7 @@ public class SampleActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_sample);
 
-    photoTaker = new PhotoTaker(this, new PhotoSize(400, 400));
+    photoTaker = new PhotoTaker(this, new PhotoSize(1000, 1000));
     photoTaker.setListener(new PhotoTakerListener() {
       @Override public void onCancel(int action) {
         Toast.makeText(SampleActivity.this, "User canceled", Toast.LENGTH_SHORT).show();
@@ -48,24 +50,16 @@ public class SampleActivity extends AppCompatActivity {
           .show();
       }
 
-      @Override public void onFinish(String path, Uri uri) {
-        //ImageView imageView = (ImageView)findViewById(R.id.image);
-        //if (uri != null)
-        //  imageView.setImageURI(uri);
-        //else {
-        //  Toast.makeText(SampleActivity.this, "Image at "+path, Toast.LENGTH_SHORT).show();
-        //  File imgFile = new File(path);
-        //
-        //  if (imgFile.exists()) {
-        //    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        //    imageView.setImageBitmap(myBitmap);
-        //  }
-        //}
-      }
-
       @Override public void onFinish(Intent intent) {
         ImageView imageView = (ImageView)findViewById(R.id.image);
-        imageView.setImageURI(intent.getData());
+        if (intent.getParcelableExtra("data") != null) {
+          Bitmap bitmap = intent.getParcelableExtra("data");
+          imageView.setImageBitmap(bitmap);
+        }else if (intent.getData() != null){
+            imageView.setImageURI(intent.getData());
+        }else {
+          Toast.makeText(SampleActivity.this, "Not result", Toast.LENGTH_SHORT).show();
+        }
       }
     });
 
