@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package me.piruin.phototaker;
+package me.piruin.phototaker.intent;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import java.io.File;
 
-public interface PhotoTakerListener {
+public class CaptureIntent extends Intent {
 
-  void onCancel(int action);
-
-  void onError(int action);
-
-  void onFinish(Intent intent);
+  public CaptureIntent(File outputFile) {
+    super(MediaStore.ACTION_IMAGE_CAPTURE);
+    putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+    putExtra("return-data", true);
+    putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile));
+  }
 }

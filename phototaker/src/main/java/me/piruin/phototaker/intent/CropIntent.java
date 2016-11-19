@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package me.piruin.phototaker;
+package me.piruin.phototaker.intent;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import me.piruin.phototaker.PhotoSize;
 
 public class CropIntent extends Intent {
 
   public static final String ACTION = "com.android.camera.action.CROP";
   public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
 
-  private boolean return_data = true;
-  private boolean scale = true;
-  private boolean faceDetection = true;
-
   public CropIntent(Uri uri) {
     super(ACTION);
     setDataAndType(uri, "image/*");
-    putExtra("noFaceDetection", faceDetection);
-    putExtra("scale", scale);
-    putExtra("return-data", return_data);
+    putExtra("noFaceDetection", true);
+    putExtra("scale", true);
+    putExtra("return-data", true);
     setOutput(DEFAULT_SIZE);
   }
 

@@ -17,22 +17,24 @@
 
 package me.piruin.phototaker;
 
-import android.util.Log;
+import android.graphics.Bitmap;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
-final class FileUtils {
+public final class PhotoTakerUtils {
 
-  public static File getFile(File dir, String name) {
-    File output = new File(dir, name);
-    if (!output.exists()) {
-      try {
-        output.createNewFile();
-      } catch (IOException e) {
-        Log.e("PhotoTaker", "Error create "+output.getAbsolutePath());
-        e.printStackTrace();
-      }
+  private PhotoTakerUtils() {
+  }
+
+  public static boolean writeBitmapToFile(Bitmap bitmap, File file) {
+    try (FileOutputStream fops = new FileOutputStream(file);) {
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fops);
+      fops.flush();
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
     }
-    return output;
   }
 }

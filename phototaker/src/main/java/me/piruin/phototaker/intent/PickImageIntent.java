@@ -15,15 +15,26 @@
  * limitations under the License.
  */
 
-package me.piruin.phototaker;
+package me.piruin.phototaker.intent;
 
 import android.content.Intent;
+import me.piruin.phototaker.PhotoSize;
 
-public interface PhotoTakerListener {
+public class PickImageIntent extends Intent {
 
-  void onCancel(int action);
+  public PickImageIntent() {
+    super(Intent.ACTION_GET_CONTENT);
+    setType("image/*");
+    putExtra("return-data", true);
+  }
 
-  void onError(int action);
-
-  void onFinish(Intent intent);
+  public void enableCrop(PhotoSize photoSize) {
+    putExtra("crop", "true");
+    putExtra("noFaceDetection", true);
+    putExtra("aspectX", photoSize.widthRatio());
+    putExtra("aspectY", photoSize.heightRatio());
+    putExtra("outputX", photoSize.width);
+    putExtra("outputY", photoSize.height);
+    putExtra("scale", true);
+  }
 }

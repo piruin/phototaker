@@ -19,14 +19,17 @@ package me.piruin.phototaker;
 
 import android.util.Log;
 
-public class Logger {
+final class Logger {
   private static final String TAG = "PhotoTaker";
 
-  public static void log(String msgLog){
+  private Logger() {
+  }
+
+  static void log(String msgLog) {
     if (BuildConfig.DEBUG) Log.d(TAG, msgLog);
   }
 
-  public static void log(String logFormat, String... args){
+  static void log(String logFormat, String... args) {
     if (BuildConfig.DEBUG) Log.d(TAG, String.format(logFormat, args));
   }
 }

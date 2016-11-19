@@ -19,16 +19,17 @@ package me.piruin.phototaker.sample;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import java.io.File;
 import me.piruin.phototaker.PhotoSize;
 import me.piruin.phototaker.PhotoTaker;
 import me.piruin.phototaker.PhotoTakerListener;
+import me.piruin.phototaker.PhotoTakerUtils;
 
 public class SampleActivity extends AppCompatActivity {
 
@@ -55,17 +56,18 @@ public class SampleActivity extends AppCompatActivity {
         if (intent.getParcelableExtra("data") != null) {
           Bitmap bitmap = intent.getParcelableExtra("data");
           imageView.setImageBitmap(bitmap);
-        }else if (intent.getData() != null){
-            imageView.setImageURI(intent.getData());
-        }else {
-          Toast.makeText(SampleActivity.this, "Not result", Toast.LENGTH_SHORT).show();
+
+          PhotoTakerUtils.writeBitmapToFile(bitmap, new File(
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES), "photo.jpg"));
+        } else if (intent.getData() != null) {
+          imageView.setImageURI(intent.getData());
         }
       }
     });
 
     findViewById(R.id.take).setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        photoTaker.doShowDialog();
+        photoTaker.showDialog();
       }
     });
   }

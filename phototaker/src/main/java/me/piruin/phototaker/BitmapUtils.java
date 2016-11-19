@@ -1,11 +1,12 @@
 /*
- * Copyright 2016 Piruin Panichphol
+ * Copyright (c) 2016 Piruin Panichphol
+ *   National Electronics and Computer Technology Center, Thailand
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +21,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
+import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 final class BitmapUtils {
+
+  private BitmapUtils() {
+  }
 
   static Uri getImageUrlWithAuthority(Context context, Uri uri) {
     Bitmap bitmap = getBitmapFromUri(context, uri);
@@ -48,14 +52,16 @@ final class BitmapUtils {
     return null;
   }
 
-  static boolean writeBitmapToFile(Bitmap bitmap, File file) {
-    try (FileOutputStream fops = new FileOutputStream(file);) {
-      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fops);
-      fops.flush();
-      return true;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
+  public static File getFile(File dir, String name) {
+    File output = new File(dir, name);
+    if (!output.exists()) {
+      try {
+        output.createNewFile();
+      } catch (IOException e) {
+        Log.e("PhotoTaker", "Error create "+output.getAbsolutePath());
+        e.printStackTrace();
+      }
     }
+    return output;
   }
 }
