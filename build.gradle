@@ -48,5 +48,5 @@ ext {
   ANDROID_BUILD_TOOLS = "25.0.0"
   ANDROID_SUPPORT_VERSION = "25.0.1"
 
-  githubRepo = 'piruin/doggy-activity'
+  githubRepo = 'piruin/phototaker'
 }

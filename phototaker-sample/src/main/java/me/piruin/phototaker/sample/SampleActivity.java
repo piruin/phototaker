@@ -19,6 +19,7 @@ package me.piruin.phototaker.sample;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -30,15 +31,37 @@ import me.piruin.phototaker.PhotoSize;
 import me.piruin.phototaker.PhotoTaker;
 import me.piruin.phototaker.PhotoTakerListener;
 import me.piruin.phototaker.PhotoTakerUtils;
+import me.piruin.quickaction.ActionItem;
+import me.piruin.quickaction.QuickAction;
 
 public class SampleActivity extends AppCompatActivity {
 
   PhotoTaker photoTaker;
+  private ImageView imageView;
+  private QuickAction quickAction;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_sample);
 
+    imageView = (ImageView)findViewById(R.id.image);
+    imageView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        quickAction.show(view);
+      }
+    });
+
+    findViewById(R.id.take).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        photoTaker.showDialog();
+      }
+    });
+
+    createPhotoTaker();
+    createQuickAction();
+  }
+
+  private void createPhotoTaker() {
     photoTaker = new PhotoTaker(this, new PhotoSize(1000, 1000));
     photoTaker.setListener(new PhotoTakerListener() {
       @Override public void onCancel(int action) {
@@ -52,7 +75,6 @@ public class SampleActivity extends AppCompatActivity {
       }
 
       @Override public void onFinish(Intent intent) {
-        ImageView imageView = (ImageView)findViewById(R.id.image);
         if (intent.getParcelableExtra("data") != null) {
           Bitmap bitmap = intent.getParcelableExtra("data");
           imageView.setImageBitmap(bitmap);
@@ -64,10 +86,23 @@ public class SampleActivity extends AppCompatActivity {
         }
       }
     });
+  }
 
-    findViewById(R.id.take).setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        photoTaker.showDialog();
+  private void createQuickAction() {
+    quickAction = new QuickAction(SampleActivity.this, QuickAction.VERTICAL);
+    quickAction.setColor(Color.LTGRAY);
+    quickAction.addActionItem(new ActionItem(1, "Take from Camera"));
+    quickAction.addActionItem(new ActionItem(2, "Select from Gallery"));
+    quickAction.setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+      @Override public void onItemClick(ActionItem item) {
+        switch (item.getActionId()) {
+          case 1:
+            photoTaker.captureImage();
+            break;
+          case 2:
+            photoTaker.pickImage();
+            break;
+        }
       }
     });
   }
