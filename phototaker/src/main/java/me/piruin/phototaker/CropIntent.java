@@ -1,11 +1,12 @@
 /*
- * Copyright 2016 Piruin Panichphol
+ * Copyright (c) 2016 Piruin Panichphol
+ *   National Electronics and Computer Technology Center, Thailand
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +19,7 @@ package me.piruin.phototaker;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import java.util.List;
 
 public class CropIntent extends Intent {
 
@@ -50,7 +49,6 @@ public class CropIntent extends Intent {
   public static boolean hasSupportActivity(Context context) {
     Intent intent = new Intent(ACTION);
     intent.setType("image/*");
-    List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
-    return (list.size() > 0) ? true : false;
+    return intent.resolveActivity(context.getPackageManager()) != null;
   }
 }

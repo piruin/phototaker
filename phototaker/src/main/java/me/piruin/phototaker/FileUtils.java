@@ -17,16 +17,22 @@
 
 package me.piruin.phototaker;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.util.Log;
+import java.io.File;
+import java.io.IOException;
 
-public interface PhotoTakerListener {
+final class FileUtils {
 
-  void onCancel(int action);
-
-  void onError(int action);
-
-  void onFinish(String path, Uri uri);
-
-  void onFinish(Intent intent);
+  public static File getFile(File dir, String name) {
+    File output = new File(dir, name);
+    if (!output.exists()) {
+      try {
+        output.createNewFile();
+      } catch (IOException e) {
+        Log.e("PhotoTaker", "Error create "+output.getAbsolutePath());
+        e.printStackTrace();
+      }
+    }
+    return output;
+  }
 }
