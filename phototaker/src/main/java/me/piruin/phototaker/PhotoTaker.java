@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import java.io.File;
 import me.piruin.phototaker.intent.CaptureIntent;
 import me.piruin.phototaker.intent.CropIntent;
@@ -141,7 +140,7 @@ public class PhotoTaker {
 
   interface Action {
 
-    void action(@Nullable Uri data);
+    void action(Uri data);
 
     void onResult(Intent data);
   }
@@ -169,7 +168,7 @@ public class PhotoTaker {
 
   private class PickAction implements Action {
 
-    @Override public void action(@Nullable Uri data) {
+    @Override public void action(Uri data) {
       Logger.log("blayzupe pickImage() START");
 
       PickImageIntent intent = new PickImageIntent();
