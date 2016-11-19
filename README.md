@@ -1,5 +1,6 @@
 # PhotoTaker
 [![Build Status](https://travis-ci.org/piruin/phototaker.svg?branch=master)](https://travis-ci.org/piruin/phototaker)
+[![Download](https://api.bintray.com/packages/blazei/maven/PhotoTaker/images/download.svg)](https://bintray.com/blazei/maven/PhotoTaker/_latestVersion)
 
 > Make `capture` or `choose` photo -> `crop` process as easy as it should be.
 
