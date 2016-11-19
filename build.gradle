@@ -46,7 +46,7 @@ ext {
   ANDROID_MIN_SDK = 19
   ANDROID_TARGET_SDK = 25
   ANDROID_BUILD_TOOLS = "25.0.0"
-  ANDROID_SUPPORT_VERSION = "25.0.0"
+  ANDROID_SUPPORT_VERSION = "25.0.1"
 
   githubRepo = 'piruin/doggy-activity'
 }
