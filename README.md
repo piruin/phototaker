@@ -7,7 +7,7 @@ This Android Library aim to wrap complexity those step
 1. Capture image by external :camera: camera app or choose image in :framed_picture: gallery.
 2. Then :scissors: crop image from `1.` with app that have _crop_ function.
 
-## Installation - WIP
+## Installation
 
 ### [JCenter]
 

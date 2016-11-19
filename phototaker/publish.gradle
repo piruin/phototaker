@@ -1,0 +1,94 @@
+/*
+ * Copyright 2016 Piruin Panichphol
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+  options.charSet = 'UTF-8'
+  options.encoding = 'UTF-8'
+  source = android.sourceSets.main.java.sourceFiles
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  classpath += configurations.compile
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives sourcesJar
+  archives javadocJar
+}
+
+install {
+  repositories.mavenInstaller {
+    pom.project {
+      name rootProject.name
+      inceptionYear 2016
+      description = project.description
+      url = 'https://github.com/' + project.githubRepo
+      packaging 'aar'
+      licenses {
+        license {
+          name 'The Apache Software License, Version 2.0'
+          url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+      }
+      developers {
+        developer {
+          id 'piruin'
+          name 'Blast Piruin Panichphol'
+          email 'piruin.p@gmail'
+          url 'https://piruin.me'
+        }
+      }
+      scm {
+        connection 'https://github.com/' + project.githubRepo + '.git'
+        developerConnection 'https://github.com/' + project.githubRepo + '.git'
+        url 'https://github.com/' + project.githubRepo
+      }
+    }
+  }
+}
+
+bintray {
+  user = project.hasProperty('bintrayUser') ? project.getProperty('bintrayUser') :
+    System.getenv('BINTRAY_USER') ?: ''
+  key = project.hasProperty('bintrayKey') ? project.getProperty('bintrayKey') :
+    System.getenv('BINTRAY_KEY') ?: ''
+  configurations = ['archives']
+  publish = true
+  pkg {
+    repo = 'maven'
+    name = rootProject.name
+    desc = project.description
+    websiteUrl = 'https://github.com/' + project.githubRepo
+    issueTrackerUrl = 'https://github.com/' + project.githubRepo + '/issues'
+    vcsUrl = 'https://github.com/' + project.githubRepo + '.git'
+    githubRepo = project.githubRepo
+    licenses = ['Apache-2.0']
+    publicDownloadNumbers = true
+    version {
+      name = project.version
+      released = new Date()
+      vcsTag = project.version
+    }
+  }
+}
