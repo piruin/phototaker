@@ -1,4 +1,5 @@
 # PhotoTaker
+[![Build Status](https://travis-ci.org/piruin/phototaker.svg?branch=master)](https://travis-ci.org/piruin/phototaker)
 
 > Make `capture` or `choose` photo -> `crop` process as easy as it should be.
 
@@ -9,9 +10,9 @@ This Android Library aim to wrap complexity those step
 
 ## Installation
 
-### [JCenter]
+### Gradle
 
-- **Step 1** - set JCenter repository (This step not require for modern android project)
+- **Step 1** - set [JCenter] repository (This step not require for modern android project)
 - **Step 2** - Add dependencies on app module
 
 ```groovy
@@ -19,7 +20,7 @@ dependencies {
   compile 'me.piruin:phototaker:LATEST_VERSION'
 }
 ```
-Change `LATEST_VERSION` to latest version name
+Change `LATEST_VERSION` to latest release version name
 
 ## Usage
 
