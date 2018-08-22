@@ -18,10 +18,12 @@ This Android Library aim to wrap complexity those step
 
 ```groovy
 dependencies {
-  compile 'me.piruin:phototaker:LATEST_VERSION'
+  implementation 'me.piruin:phototaker:LATEST_VERSION'
 }
 ```
 Change `LATEST_VERSION` to latest release version name
+
+This library require `com.android.support:support-core-utils` that already come with `com.android.support:appcompat-v7`. If you already use AppCompat library (Who don't?). So, Don't have to worry about it.
 
 ## Usage
 
@@ -33,17 +35,17 @@ Change `LATEST_VERSION` to latest release version name
   * Choose photo in gallery with `pickImage()`
   * Use `showDialog()` to let user choose by built-in dialog
 5. Get your cropped photo via `Intent` parameter of `PhotoTakerListener.onSuccess()`
-  * Get raw bitmap by `Bitmap bitmap = intent.getParcelableExtra("data");`
-  * Get data's uri by `intent.getData()`
+  * Get image's uri by `intent.getData()`
 
 See [SampleActivity] for more Information.
 
 ## Setup your application
+
+### Add FileProvider
 cause by [file:// scheme is now not allowed to be attached with Intent on targetSdkVersion 24 (Android Nougat)](https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en) make you have do more little work
 
-### 1 Add FileProvider
+Add `FileProvider` at your application manifest
 
-Add FileProvider at your application manifest
 ```xml
    <provider
             android:name="android.support.v4.content.FileProvider"
@@ -66,9 +68,10 @@ Add `res/xml/provider_paths.xml`
 
 ```
 
-### 2 Reqest Read-External-Storage permssion
+### Request for Read-External-Storage permission
 
-Too read content Uri of crop image your use must grant `READ_EXTERNAL_STORAGE`
+To read content Uri of crop image, your user must grant `READ_EXTERNAL_STORAGE` permission.
+There are many great library waiting to help you handle that.
 
 ## License
 

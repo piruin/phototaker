@@ -44,7 +44,6 @@ android {
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   implementation project(':phototaker')
-  implementation "com.android.support:support-core-utils:$ANDROID_SUPPORT_VERSION"
   implementation "com.android.support:appcompat-v7:$ANDROID_SUPPORT_VERSION"
   implementation "me.piruin:quickaction:2.4.2"
   implementation 'gun0912.ted:tedpermission:2.2.0'

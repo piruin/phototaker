@@ -63,7 +63,7 @@ dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   compileOnly "com.android.support:support-core-utils:$ANDROID_SUPPORT_VERSION"
   testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.2.21'
+  testImplementation 'org.mockito:mockito-core:2.21.0'
 }
 
 apply from: 'publish.gradle'
