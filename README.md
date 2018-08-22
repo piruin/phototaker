@@ -38,6 +38,38 @@ Change `LATEST_VERSION` to latest release version name
 
 See [SampleActivity] for more Information.
 
+## Setup your application
+cause by [file:// scheme is now not allowed to be attached with Intent on targetSdkVersion 24 (Android Nougat)](https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en) make you have do more little work
+
+### 1 Add FileProvider
+
+Add FileProvider at your application manifest
+```xml
+   <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+   </provider>
+```
+
+Add `res/xml/provider_paths.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="external_files" path="."/>
+</paths>
+
+```
+
+### 2 Reqest Read-External-Storage permssion
+
+Too read content Uri of crop image your use must grant `READ_EXTERNAL_STORAGE`
+
 ## License
 
 This project under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) license

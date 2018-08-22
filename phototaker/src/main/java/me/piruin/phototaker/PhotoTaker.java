@@ -19,10 +19,13 @@ package me.piruin.phototaker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
+
 import java.io.File;
 import me.piruin.phototaker.intent.CaptureIntent;
 import me.piruin.phototaker.intent.CropIntent;
@@ -35,11 +38,12 @@ public class PhotoTaker {
   public static final String TAG = "PhotoTaker";
 
   Action cropAction = new CropAction();
-  Action captureAction = new CaptureAction();
-  Action pickAction = new PickAction();
+  Action captureAction;
+  Action pickAction;
 
   private String tempFileName = "phototaker-temp.jpg";
   private File captureTempDir;
+  private File cropImgDir;
   private Activity activity;
   private PhotoSize photoSize;
   private PhotoTakerListener listener;
@@ -54,7 +58,12 @@ public class PhotoTaker {
     this.activity = activity;
     this.photoSize = photoSize;
 
+    captureAction = new CaptureAction(activity);
+    pickAction = new PickAction(activity);
+
+    cropImgDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     captureTempDir = activity.getExternalCacheDir();
+
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -147,19 +156,25 @@ public class PhotoTaker {
 
   private class CaptureAction implements Action {
 
+    private final Context context;
+
+    public CaptureAction(Context context) {
+      this.context = context;
+    }
+
     @Override public void action(Uri data) {
       captureTempDir.mkdirs();
       File temp = BitmapUtils.getFile(captureTempDir, tempFileName);
 
-      CaptureIntent captureIntent = new CaptureIntent(temp);
+      CaptureIntent captureIntent = new CaptureIntent(context, temp);
       if (captureIntent.resolveActivity(activity.getPackageManager()) != null)
         activity.startActivityForResult(captureIntent, CAPTURE_IMAGE);
     }
 
     @Override public void onResult(Intent data) {
-      Logger.log("blayzupe CAPTURE_IMAGE");
+      Logger.log("CAPTURE_IMAGE");
       final File tempFile = BitmapUtils.getFile(captureTempDir, tempFileName);
-      Logger.log("blayzupe tempfile="+tempFile.getAbsolutePath());
+      Logger.log("tempfile="+tempFile.getAbsolutePath());
 
       // Create MediaUriScanner to find your Content URI of File
       new ContentUriScanner(activity, mScanner).scan(tempFile.getAbsolutePath());
@@ -168,14 +183,22 @@ public class PhotoTaker {
 
   private class PickAction implements Action {
 
-    @Override public void action(Uri data) {
-      Logger.log("blayzupe pickImage() START");
+    private final Context context;
 
-      PickImageIntent intent = new PickImageIntent();
+    public PickAction(Context context) {
+      this.context = context;
+    }
+
+    @Override public void action(Uri data) {
+      Logger.log("pickImage() START");
+
+      File output = BitmapUtils.getFile(cropImgDir, tempFileName);
+
+      PickImageIntent intent = new PickImageIntent(context, output);
 
       if (CropIntent.hasSupportActivity(activity)) {
         // Use external Crop Intent if found
-        Logger.log("blayzupe pickImage() Found");
+        Logger.log("pickImage() Found");
         if (intent.resolveActivity(activity.getPackageManager()) != null)
           activity.startActivityForResult(intent, PICK_IMAGE);
       } else {
@@ -188,7 +211,7 @@ public class PhotoTaker {
     }
 
     @Override public void onResult(Intent data) {
-      Logger.log("blayzupe PICK_IMAGE");
+      Logger.log("PICK_IMAGE");
       Uri dataUri = data.getData();
 
       if (dataUri != null) {
@@ -199,11 +222,11 @@ public class PhotoTaker {
           doCropImage(dataUri);
         } else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
           // if Scheme URI is File then scan for content then Crop it!
-          Logger.log("blayzupe search for Media Content of path="+dataUri.getPath());
+          Logger.log("search for Media Content of path="+dataUri.getPath());
           new ContentUriScanner(activity, mScanner).scan(dataUri.getPath());
         }
       } else {
-        Logger.log("blayzupe DATA IS NULL");
+        Logger.log("DATA IS NULL");
       }
     }
   }
@@ -212,7 +235,7 @@ public class PhotoTaker {
 
     @Override public void action(Uri data) {
       // set CropUri for use in onActivityResult Method.
-      Logger.log("blayzupe Start doCropImage(Uri uri) uri="+data.toString());
+      Logger.log("Start doCropImage(Uri uri) uri="+data.toString());
       Logger.log("Start doCropImage uri=%s", data.toString());
 
       CropIntent intent = new CropIntent(data);
@@ -224,7 +247,7 @@ public class PhotoTaker {
     }
 
     @Override public void onResult(Intent data) {
-      Logger.log("blayzupe CROP_IMAGE");
+      Logger.log("CROP_IMAGE");
       Uri uri = data.getData();
       Bitmap bitmap = data.getParcelableExtra("data");
       if (bitmap == null) {

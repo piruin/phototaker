@@ -17,18 +17,24 @@
 
 package me.piruin.phototaker.intent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
+
 import java.io.File;
+
+import me.piruin.phototaker.BuildConfig;
 
 public class CaptureIntent extends Intent {
 
-  public CaptureIntent(File outputFile) {
+  public CaptureIntent(Context context, File outputFile) {
     super(MediaStore.ACTION_IMAGE_CAPTURE);
     putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
     putExtra("return-data", true);
-    putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile));
+    putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context,
+            context.getPackageName() + ".provider", outputFile));
   }
 }

@@ -17,15 +17,23 @@
 
 package me.piruin.phototaker.intent;
 
+import android.content.Context;
 import android.content.Intent;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
+
+import java.io.File;
+
 import me.piruin.phototaker.PhotoSize;
 
 public class PickImageIntent extends Intent {
 
-  public PickImageIntent() {
+  public PickImageIntent(Context context, File outputFile) {
     super(Intent.ACTION_GET_CONTENT);
     setType("image/*");
-    putExtra("return-data", true);
+    //putExtra("return-data", true);
+    putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context,
+            context.getPackageName() + ".provider", outputFile));
   }
 
   public void enableCrop(PhotoSize photoSize) {

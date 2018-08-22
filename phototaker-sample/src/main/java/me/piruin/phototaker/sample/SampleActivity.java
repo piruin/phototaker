@@ -17,6 +17,7 @@
 
 package me.piruin.phototaker.sample;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -26,7 +27,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
 import java.io.File;
+import java.util.ArrayList;
+
 import me.piruin.phototaker.PhotoSize;
 import me.piruin.phototaker.PhotoTaker;
 import me.piruin.phototaker.PhotoTakerListener;
@@ -59,6 +66,21 @@ public class SampleActivity extends AppCompatActivity {
 
     createPhotoTaker();
     createQuickAction();
+
+    TedPermission.with(this)
+            .setPermissionListener(new PermissionListener() {
+              @Override
+              public void onPermissionGranted() {
+                imageView.setEnabled(true);
+              }
+
+              @Override
+              public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                imageView.setEnabled(false);
+              }
+            })
+            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+            .check();
   }
 
   private void createPhotoTaker() {
@@ -75,14 +97,14 @@ public class SampleActivity extends AppCompatActivity {
       }
 
       @Override public void onFinish(Intent intent) {
-        if (intent.getParcelableExtra("data") != null) {
+        if (intent.getData() != null) {
+          imageView.setImageURI(intent.getData());
+        } else if (intent.getParcelableExtra("data") != null) {
           Bitmap bitmap = intent.getParcelableExtra("data");
           imageView.setImageBitmap(bitmap);
 
           PhotoTakerUtils.writeBitmapToFile(bitmap, new File(
             getExternalFilesDir(Environment.DIRECTORY_PICTURES), "photo.jpg"));
-        } else if (intent.getData() != null) {
-          imageView.setImageURI(intent.getData());
         }
       }
     });
