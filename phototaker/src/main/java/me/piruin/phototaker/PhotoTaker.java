@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2016 Piruin Panichphol
- *   National Electronics and Computer Technology Center, Thailand
+ * Copyright 2016 Piruin Panichphol
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +24,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-
+import android.support.v4.app.Fragment;
 import java.io.File;
 import me.piruin.phototaker.intent.CaptureIntent;
 import me.piruin.phototaker.intent.CropIntent;
@@ -37,14 +36,14 @@ public class PhotoTaker {
   public static final int PICK_IMAGE = 1032;
   public static final String TAG = "PhotoTaker";
 
-  Action cropAction = new CropAction();
+  Action cropAction;
   Action captureAction;
   Action pickAction;
 
   private String tempFileName = "phototaker-temp.jpg";
   private File captureTempDir;
   private File cropImgDir;
-  private Activity activity;
+  private UiComponent ui;
   private PhotoSize photoSize;
   private PhotoTakerListener listener;
   private ContentUriScanner.OnScannedListener mScanner = new ContentUriScanner.OnScannedListener() {
@@ -55,15 +54,33 @@ public class PhotoTaker {
   };
 
   public PhotoTaker(Activity activity, PhotoSize photoSize) {
-    this.activity = activity;
+    this.ui = new ActivityComponent(activity);
     this.photoSize = photoSize;
 
-    captureAction = new CaptureAction(activity);
-    pickAction = new PickAction(activity);
+    init(activity);
+  }
 
-    cropImgDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    captureTempDir = activity.getExternalCacheDir();
+  private void init(Context context) {
+    captureAction = new CaptureAction(context);
+    pickAction = new PickAction(context);
+    cropAction = new CropAction(context);
 
+    cropImgDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    captureTempDir = context.getExternalCacheDir();
+  }
+
+  public PhotoTaker(android.app.Fragment fragment, PhotoSize photoSize) {
+    this.ui = new FragmentComponent(fragment);
+    this.photoSize = photoSize;
+
+    init(fragment.getActivity());
+  }
+
+  public PhotoTaker(Fragment fragment, PhotoSize photoSize) {
+    this.ui = new SupportFragmentComponent(fragment);
+    this.photoSize = photoSize;
+
+    init(fragment.getActivity());
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -118,7 +135,7 @@ public class PhotoTaker {
     final CharSequence[] items = {
       "Take from Camera", "Select from Gallery"
     };
-    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    AlertDialog.Builder builder = new AlertDialog.Builder(ui.getContext());
     builder.setItems(items, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int item) {
         switch (item) {
@@ -154,6 +171,13 @@ public class PhotoTaker {
     void onResult(Intent data);
   }
 
+  private interface UiComponent {
+
+    void startActivityForResult(Intent intent, int requestCode);
+
+    Context getContext();
+  }
+
   private class CaptureAction implements Action {
 
     private final Context context;
@@ -167,8 +191,8 @@ public class PhotoTaker {
       File temp = BitmapUtils.getFile(captureTempDir, tempFileName);
 
       CaptureIntent captureIntent = new CaptureIntent(context, temp);
-      if (captureIntent.resolveActivity(activity.getPackageManager()) != null)
-        activity.startActivityForResult(captureIntent, CAPTURE_IMAGE);
+      if (captureIntent.resolveActivity(context.getPackageManager()) != null)
+        ui.startActivityForResult(captureIntent, CAPTURE_IMAGE);
     }
 
     @Override public void onResult(Intent data) {
@@ -177,7 +201,7 @@ public class PhotoTaker {
       Logger.log("tempfile="+tempFile.getAbsolutePath());
 
       // Create MediaUriScanner to find your Content URI of File
-      new ContentUriScanner(activity, mScanner).scan(tempFile.getAbsolutePath());
+      new ContentUriScanner(context, mScanner).scan(tempFile.getAbsolutePath());
     }
   }
 
@@ -196,17 +220,17 @@ public class PhotoTaker {
 
       PickImageIntent intent = new PickImageIntent(context, output);
 
-      if (CropIntent.hasSupportActivity(activity)) {
+      if (CropIntent.hasSupportActivity(context)) {
         // Use external Crop Intent if found
         Logger.log("pickImage() Found");
-        if (intent.resolveActivity(activity.getPackageManager()) != null)
-          activity.startActivityForResult(intent, PICK_IMAGE);
+        if (intent.resolveActivity(context.getPackageManager()) != null)
+          ui.startActivityForResult(intent, PICK_IMAGE);
       } else {
         // Use Internal Crop method of GET_CONTENT intent
         // This is more Risk method
         intent.enableCrop(photoSize);
-        if (intent.resolveActivity(activity.getPackageManager()) != null)
-          activity.startActivityForResult(intent, CROP_IMAGE);
+        if (intent.resolveActivity(context.getPackageManager()) != null)
+          ui.startActivityForResult(intent, CROP_IMAGE);
       }
     }
 
@@ -218,12 +242,12 @@ public class PhotoTaker {
         if (dataUri.getScheme().trim().equalsIgnoreCase("content")) {
           Logger.log("onActivityResult: authority = "+dataUri.getAuthority());
           if (!dataUri.getAuthority().equalsIgnoreCase("media"))
-            dataUri = BitmapUtils.getImageUrlWithAuthority(activity, dataUri);
+            dataUri = BitmapUtils.getImageUrlWithAuthority(context, dataUri);
           doCropImage(dataUri);
         } else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
           // if Scheme URI is File then scan for content then Crop it!
           Logger.log("search for Media Content of path="+dataUri.getPath());
-          new ContentUriScanner(activity, mScanner).scan(dataUri.getPath());
+          new ContentUriScanner(context, mScanner).scan(dataUri.getPath());
         }
       } else {
         Logger.log("DATA IS NULL");
@@ -233,6 +257,12 @@ public class PhotoTaker {
 
   private class CropAction implements Action {
 
+    private final Context context;
+
+    public CropAction(Context context) {
+      this.context = context;
+    }
+
     @Override public void action(Uri data) {
       // set CropUri for use in onActivityResult Method.
       Logger.log("Start doCropImage(Uri uri) uri="+data.toString());
@@ -241,8 +271,8 @@ public class PhotoTaker {
       CropIntent intent = new CropIntent(data);
       intent.setOutput(photoSize);
 
-      if (intent.resolveActivity(activity.getPackageManager()) != null) {
-        activity.startActivityForResult(intent, CROP_IMAGE);
+      if (intent.resolveActivity(context.getPackageManager()) != null) {
+        ui.startActivityForResult(intent, CROP_IMAGE);
       }
     }
 
@@ -253,15 +283,66 @@ public class PhotoTaker {
       if (bitmap == null) {
         if (uri != null) {
           Logger.log("onActivityResult: crop data uri="+uri.toString());
-          bitmap = BitmapUtils.getBitmapFromUri(activity, uri);
+          bitmap = BitmapUtils.getBitmapFromUri(context, uri);
         }
       } else {
-        uri = BitmapUtils.getImageUri(activity, bitmap, TAG);
+        uri = BitmapUtils.getImageUri(context, bitmap, TAG);
       }
       Intent intent = new Intent();
       intent.setDataAndType(uri, "image/*");
       intent.putExtra("data", bitmap);
       listener.onFinish(intent);
+    }
+  }
+
+  private class ActivityComponent implements UiComponent {
+
+    private Activity activity;
+
+    private ActivityComponent(Activity activity) {
+      this.activity = activity;
+    }
+
+    @Override public void startActivityForResult(Intent intent, int requestCode) {
+      activity.startActivityForResult(intent, requestCode);
+    }
+
+    @Override public Context getContext() {
+      return activity;
+    }
+  }
+
+  private class FragmentComponent implements UiComponent {
+
+    private android.app.Fragment fragment;
+
+    private FragmentComponent(android.app.Fragment fragment) {
+      this.fragment = fragment;
+    }
+
+    @Override public void startActivityForResult(Intent intent, int requestCode) {
+      fragment.startActivityForResult(intent, requestCode);
+    }
+
+    @Override public Context getContext() {
+      return fragment.getActivity();
+    }
+  }
+
+  private class SupportFragmentComponent implements UiComponent {
+
+    private Fragment fragment;
+
+    private SupportFragmentComponent(Fragment fragment) {
+      this.fragment = fragment;
+    }
+
+    @Override public void startActivityForResult(Intent intent, int requestCode) {
+      fragment.startActivityForResult(intent, requestCode);
+    }
+
+    @Override public Context getContext() {
+      return fragment.getActivity();
     }
   }
 }
