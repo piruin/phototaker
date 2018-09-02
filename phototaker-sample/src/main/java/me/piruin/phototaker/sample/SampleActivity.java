@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2016 Piruin Panichphol
- *   National Electronics and Computer Technology Center, Thailand
+ * Copyright 2016 Piruin Panichphol
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,13 +26,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-
 import java.io.File;
 import java.util.ArrayList;
-
 import me.piruin.phototaker.PhotoSize;
 import me.piruin.phototaker.PhotoTaker;
 import me.piruin.phototaker.PhotoTakerListener;
@@ -131,6 +127,7 @@ public class SampleActivity extends AppCompatActivity {
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
     Toast.makeText(this, "Result", Toast.LENGTH_SHORT).show();
     photoTaker.onActivityResult(requestCode, resultCode, data);
   }

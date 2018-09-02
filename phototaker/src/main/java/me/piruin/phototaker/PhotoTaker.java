@@ -34,7 +34,7 @@ public class PhotoTaker {
   public static final int CAPTURE_IMAGE = 1030;
   public static final int CROP_IMAGE = 1031;
   public static final int PICK_IMAGE = 1032;
-  public static final String TAG = "PhotoTaker";
+  static final String TAG = "PhotoTaker";
 
   Action cropAction;
   Action captureAction;
@@ -73,14 +73,14 @@ public class PhotoTaker {
     this.ui = new FragmentComponent(fragment);
     this.photoSize = photoSize;
 
-    init(fragment.getActivity());
+    init(ui.getContext());
   }
 
   public PhotoTaker(Fragment fragment, PhotoSize photoSize) {
     this.ui = new SupportFragmentComponent(fragment);
     this.photoSize = photoSize;
 
-    init(fragment.getActivity());
+    init(ui.getContext());
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -182,7 +182,7 @@ public class PhotoTaker {
 
     private final Context context;
 
-    public CaptureAction(Context context) {
+    CaptureAction(Context context) {
       this.context = context;
     }
 
@@ -209,7 +209,7 @@ public class PhotoTaker {
 
     private final Context context;
 
-    public PickAction(Context context) {
+    PickAction(Context context) {
       this.context = context;
     }
 
@@ -259,7 +259,7 @@ public class PhotoTaker {
 
     private final Context context;
 
-    public CropAction(Context context) {
+    CropAction(Context context) {
       this.context = context;
     }
 
@@ -297,7 +297,7 @@ public class PhotoTaker {
 
   private class ActivityComponent implements UiComponent {
 
-    private Activity activity;
+    final private Activity activity;
 
     private ActivityComponent(Activity activity) {
       this.activity = activity;
@@ -314,7 +314,7 @@ public class PhotoTaker {
 
   private class FragmentComponent implements UiComponent {
 
-    private android.app.Fragment fragment;
+    final private android.app.Fragment fragment;
 
     private FragmentComponent(android.app.Fragment fragment) {
       this.fragment = fragment;
@@ -331,7 +331,7 @@ public class PhotoTaker {
 
   private class SupportFragmentComponent implements UiComponent {
 
-    private Fragment fragment;
+    final private Fragment fragment;
 
     private SupportFragmentComponent(Fragment fragment) {
       this.fragment = fragment;
@@ -342,7 +342,7 @@ public class PhotoTaker {
     }
 
     @Override public Context getContext() {
-      return fragment.getActivity();
+      return fragment.getContext();
     }
   }
 }

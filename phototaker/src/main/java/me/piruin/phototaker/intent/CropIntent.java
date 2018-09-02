@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2016 Piruin Panichphol
- *   National Electronics and Computer Technology Center, Thailand
+ * Copyright 2016 Piruin Panichphol
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +23,11 @@ import me.piruin.phototaker.PhotoSize;
 
 public class CropIntent extends Intent {
 
-  public static final String ACTION = "com.android.camera.action.CROP";
+  public static final String ACTION_CROP = "com.android.camera.action.CROP";
   public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
 
   public CropIntent(Uri uri) {
-    super(ACTION);
+    super(ACTION_CROP);
     setDataAndType(uri, "image/*");
     putExtra("noFaceDetection", true);
     putExtra("scale", true);
@@ -44,7 +43,7 @@ public class CropIntent extends Intent {
   }
 
   public static boolean hasSupportActivity(Context context) {
-    Intent intent = new Intent(ACTION);
+    Intent intent = new Intent(ACTION_CROP);
     intent.setType("image/*");
     return intent.resolveActivity(context.getPackageManager()) != null;
   }

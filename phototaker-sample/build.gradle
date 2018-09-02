@@ -47,4 +47,5 @@ dependencies {
   implementation "com.android.support:appcompat-v7:$ANDROID_SUPPORT_VERSION"
   implementation "me.piruin:quickaction:2.4.2"
   implementation 'gun0912.ted:tedpermission:2.2.0'
+  implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }

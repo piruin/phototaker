@@ -23,7 +23,7 @@ dependencies {
 ```
 Change `LATEST_VERSION` to latest release version name
 
-This library require `com.android.support:support-core-utils` that already come with `com.android.support:appcompat-v7`. If you already use AppCompat library (Who don't?). So, Don't have to worry about it.
+This library require `com.android.support:support-core-utils` and `com.android.support:support-fragment` that already come with `com.android.support:appcompat-v7`. If you already use AppCompat library (Who don't?). So, Don't have to worry about it.
 
 ## Usage
 
