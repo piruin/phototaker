@@ -19,14 +19,16 @@ package me.piruin.phototaker.intent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+
 import me.piruin.phototaker.PhotoSize;
 
 public class CropIntent extends Intent {
 
-  public static final String ACTION_CROP = "com.android.camera.action.CROP";
-  public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
+  @NonNull public static final String ACTION_CROP = "com.android.camera.action.CROP";
+  @NonNull public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
 
-  public CropIntent(Uri uri) {
+  public CropIntent(@NonNull Uri uri) {
     super(ACTION_CROP);
     setDataAndType(uri, "image/*");
     putExtra("noFaceDetection", true);
@@ -35,14 +37,14 @@ public class CropIntent extends Intent {
     setOutput(DEFAULT_SIZE);
   }
 
-  public void setOutput(PhotoSize size) {
+  public void setOutput(@NonNull PhotoSize size) {
     putExtra("aspectX", size.widthRatio());
     putExtra("aspectY", size.heightRatio());
     putExtra("outputX", size.width);
     putExtra("outputY", size.height);
   }
 
-  public static boolean hasSupportActivity(Context context) {
+  public static boolean hasSupportActivity(@NonNull Context context) {
     Intent intent = new Intent(ACTION_CROP);
     intent.setType("image/*");
     return intent.resolveActivity(context.getPackageManager()) != null;

@@ -18,6 +18,8 @@
 package me.piruin.phototaker;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +29,7 @@ public final class PhotoTakerUtils {
   private PhotoTakerUtils() {
   }
 
-  public static boolean writeBitmapToFile(Bitmap bitmap, File file) {
+  public static boolean writeBitmapToFile(@NonNull Bitmap bitmap, @NonNull File file) {
     try (FileOutputStream fops = new FileOutputStream(file);) {
       bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fops);
       fops.flush();

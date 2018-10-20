@@ -20,17 +20,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+
 import java.io.File;
 
 public class CaptureIntent extends Intent {
 
-  public CaptureIntent(Context context, File outputFile) {
+  public CaptureIntent(@NonNull Context context, @NonNull File outputFile) {
     super(MediaStore.ACTION_IMAGE_CAPTURE);
     addFlags(FLAG_GRANT_WRITE_URI_PERMISSION);
     putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
     putExtra("return-data", true);
-    putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context,
-            context.getPackageName() + ".provider", outputFile));
+    putExtra(MediaStore.EXTRA_OUTPUT,
+      FileProvider.getUriForFile(context, context.getPackageName() + ".provider", outputFile));
   }
 }

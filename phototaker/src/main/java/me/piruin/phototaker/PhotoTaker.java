@@ -23,6 +23,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import java.io.File;
@@ -55,7 +57,7 @@ public class PhotoTaker {
     }
   };
 
-  public PhotoTaker(Activity activity, PhotoSize photoSize) {
+  public PhotoTaker(@NonNull Activity activity, @NonNull PhotoSize photoSize) {
     this.ui = new ActivityComponent(activity);
     this.photoSize = photoSize;
 
@@ -70,21 +72,14 @@ public class PhotoTaker {
     captureTempDir = context.getExternalCacheDir();
   }
 
-  public PhotoTaker(android.app.Fragment fragment, PhotoSize photoSize) {
-    this.ui = new FragmentComponent(fragment);
-    this.photoSize = photoSize;
-
-    init(ui.getContext());
-  }
-
-  public PhotoTaker(Fragment fragment, PhotoSize photoSize) {
+  public PhotoTaker(@NonNull Fragment fragment, @NonNull PhotoSize photoSize) {
     this.ui = new SupportFragmentComponent(fragment);
     this.photoSize = photoSize;
 
     init(ui.getContext());
   }
 
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     if (resultCode == Activity.RESULT_CANCELED) {
       onResultCanceled(requestCode);
       return;
@@ -93,6 +88,10 @@ public class PhotoTaker {
     if (resultCode != Activity.RESULT_OK) {
       onResultNotOk(requestCode);
       return;
+    }
+
+    if (data == null) {
+      onResultNotOk(requestCode);
     }
 
     switch (requestCode) {
@@ -127,7 +126,7 @@ public class PhotoTaker {
     }
   }
 
-  public boolean doCropImage(Uri uri) {
+  public boolean doCropImage(@NonNull Uri uri) {
     cropAction.action(uri);
     return true;
   }
@@ -163,14 +162,14 @@ public class PhotoTaker {
     pickAction.action(null);
   }
 
-  public String generateTempFileName() {
+  private String generateTempFileName() {
     return String.format(Locale.getDefault(),
-        "%s-%d-temp.jpg",
-        ui.getContext().getPackageName().replace(".", ""),
-        Calendar.getInstance().getTimeInMillis());
+      "%s-%d-temp.jpg",
+      ui.getContext().getPackageName().replace(".", ""),
+      Calendar.getInstance().getTimeInMillis());
   }
 
-  public void setListener(PhotoTakerListener listener) {
+  public void setListener(@NonNull PhotoTakerListener listener) {
     this.listener = listener;
   }
 
@@ -208,7 +207,7 @@ public class PhotoTaker {
     @Override public void onResult(Intent data) {
       Logger.log("CAPTURE_IMAGE");
       final File tempFile = BitmapUtils.getFile(captureTempDir, tempFileName);
-      Logger.log("tempfile="+tempFile.getAbsolutePath());
+      Logger.log("tempfile=" + tempFile.getAbsolutePath());
 
       // Create MediaUriScanner to find your Content URI of File
       new ContentUriScanner(context, mScanner).scan(tempFile.getAbsolutePath());
@@ -250,13 +249,13 @@ public class PhotoTaker {
 
       if (dataUri != null) {
         if (dataUri.getScheme().trim().equalsIgnoreCase("content")) {
-          Logger.log("onActivityResult: authority = "+dataUri.getAuthority());
+          Logger.log("onActivityResult: authority = " + dataUri.getAuthority());
           if (!dataUri.getAuthority().equalsIgnoreCase("media"))
             dataUri = BitmapUtils.getImageUrlWithAuthority(context, dataUri);
           doCropImage(dataUri);
         } else if (dataUri.getScheme().trim().equalsIgnoreCase("file")) {
           // if Scheme URI is File then scan for content then Crop it!
-          Logger.log("search for Media Content of path="+dataUri.getPath());
+          Logger.log("search for Media Content of path=" + dataUri.getPath());
           new ContentUriScanner(context, mScanner).scan(dataUri.getPath());
         }
       } else {
@@ -275,7 +274,7 @@ public class PhotoTaker {
 
     @Override public void action(Uri data) {
       // set CropUri for use in onActivityResult Method.
-      Logger.log("Start doCropImage(Uri uri) uri="+data.toString());
+      Logger.log("Start doCropImage(Uri uri) uri=" + data.toString());
       Logger.log("Start doCropImage uri=%s", data.toString());
 
       CropIntent intent = new CropIntent(data);
@@ -292,7 +291,7 @@ public class PhotoTaker {
       Bitmap bitmap = data.getParcelableExtra("data");
       if (bitmap == null) {
         if (uri != null) {
-          Logger.log("onActivityResult: crop data uri="+uri.toString());
+          Logger.log("onActivityResult: crop data uri=" + uri.toString());
           bitmap = BitmapUtils.getBitmapFromUri(context, uri);
         }
       } else {
