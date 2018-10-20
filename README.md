@@ -29,11 +29,53 @@ This library require `com.android.support:support-core-utils` and `com.android.s
 
 1. Create instance of `PhotoTaker` with current `Activity` and desire image size
 2. set `PhotoTakerListener` with `setListener()`
+
+```java
+class PhotoTakeActivity extend Activity {
+
+  PhotoTaker photoTaker;
+
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    photoTaker = new PhotoTaker(this, new PhotoSize(1000, 1000));
+    photoTaker.setListener(new PhotoTakerListener() {
+        @Override public void onCancel(int action) {}
+
+        @Override public void onError(int action) {}
+
+        @Override public void onFinish(Intent intent) {
+          if (intent.getData() != null) {
+            imageView.setImageURI(intent.getData());
+          }
+        }
+      });
+    }
+  }
+```
+
 3. Override `onActivityResult()` and call `onActivityResult()` of instance of `PhotoTaker`
+
+```java
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    photoTaker.onActivityResult(requestCode, resultCode, data);
+  }
+```
+
 4. Get photo by 3 option
   * Capture with camera app `captureImage()`
   * Choose photo in gallery with `pickImage()`
   * Use `showDialog()` to let user choose by built-in dialog
+
+``` java
+  findViewById(R.id.someButton).setOnClickListener(new View.OnClickListener() {
+    @Override public void onClick(View view) {
+      photoTaker.showDialog();
+      // photoTaker.captureImage()
+      // photoTaker.pickImage()
+    }
+  });
+```
+
 5. Get your cropped photo via `Intent` parameter of `PhotoTakerListener.onSuccess()`
   * Get image's uri by `intent.getData()`
 
@@ -71,7 +113,7 @@ Add `res/xml/provider_paths.xml`
 ### Request for Read/Write-External-Storage permission
 
 To read content Uri of crop image, your user must grant `READ_EXTERNAL_STORAGE` permission.
-and for *pick image* for gallery your user must grant `WRITE_EXTERNAL_STORAGE` instead.
+and for *pick image* from gallery your user must grant `WRITE_EXTERNAL_STORAGE` instead.
 
 There are many great library waiting to help you handle that.
 
