@@ -23,9 +23,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
+
 import java.io.File;
+import java.util.Calendar;
+import java.util.Locale;
+
 import me.piruin.phototaker.intent.CaptureIntent;
 import me.piruin.phototaker.intent.CropIntent;
 import me.piruin.phototaker.intent.PickImageIntent;
@@ -42,7 +45,6 @@ public class PhotoTaker {
 
   private String tempFileName = "phototaker-temp.jpg";
   private File captureTempDir;
-  private File cropImgDir;
   private UiComponent ui;
   private PhotoSize photoSize;
   private PhotoTakerListener listener;
@@ -65,7 +67,6 @@ public class PhotoTaker {
     pickAction = new PickAction(context);
     cropAction = new CropAction(context);
 
-    cropImgDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     captureTempDir = context.getExternalCacheDir();
   }
 
@@ -153,11 +154,20 @@ public class PhotoTaker {
   }
 
   public void captureImage() {
+    tempFileName = generateTempFileName();
     captureAction.action(null);
   }
 
   public void pickImage() {
+    tempFileName = generateTempFileName();
     pickAction.action(null);
+  }
+
+  public String generateTempFileName() {
+    return String.format(Locale.getDefault(),
+        "%s-%d-temp.jpg",
+        ui.getContext().getPackageName().replace(".", ""),
+        Calendar.getInstance().getTimeInMillis());
   }
 
   public void setListener(PhotoTakerListener listener) {
@@ -216,7 +226,7 @@ public class PhotoTaker {
     @Override public void action(Uri data) {
       Logger.log("pickImage() START");
 
-      File output = BitmapUtils.getFile(cropImgDir, tempFileName);
+      File output = BitmapUtils.getFile(captureTempDir, tempFileName);
 
       PickImageIntent intent = new PickImageIntent(context, output);
 
