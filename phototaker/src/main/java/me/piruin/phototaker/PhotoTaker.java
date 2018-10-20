@@ -45,12 +45,12 @@ public class PhotoTaker {
   Action captureAction;
   Action pickAction;
 
-  private String tempFileName = "phototaker-temp.jpg";
-  private File captureTempDir;
-  private UiComponent ui;
-  private PhotoSize photoSize;
-  private PhotoTakerListener listener;
-  private ContentUriScanner.OnScannedListener mScanner = new ContentUriScanner.OnScannedListener() {
+  String tempFileName = "phototaker-temp.jpg";
+  File captureTempDir;
+  UiComponent ui;
+  PhotoSize photoSize;
+  PhotoTakerListener listener;
+  ContentUriScanner.OnScannedListener mScanner = new ContentUriScanner.OnScannedListener() {
 
     @Override public void OnScanned(Uri uri) {
       doCropImage(uri);
@@ -308,7 +308,7 @@ public class PhotoTaker {
 
     final private Activity activity;
 
-    private ActivityComponent(Activity activity) {
+    ActivityComponent(Activity activity) {
       this.activity = activity;
     }
 
@@ -321,28 +321,11 @@ public class PhotoTaker {
     }
   }
 
-  private class FragmentComponent implements UiComponent {
-
-    final private android.app.Fragment fragment;
-
-    private FragmentComponent(android.app.Fragment fragment) {
-      this.fragment = fragment;
-    }
-
-    @Override public void startActivityForResult(Intent intent, int requestCode) {
-      fragment.startActivityForResult(intent, requestCode);
-    }
-
-    @Override public Context getContext() {
-      return fragment.getActivity();
-    }
-  }
-
   private class SupportFragmentComponent implements UiComponent {
 
     final private Fragment fragment;
 
-    private SupportFragmentComponent(Fragment fragment) {
+    SupportFragmentComponent(Fragment fragment) {
       this.fragment = fragment;
     }
 

@@ -28,7 +28,7 @@ class ContentUriScanner implements MediaScannerConnectionClient {
   private Handler handler = new Handler(Looper.getMainLooper());
   private MediaScannerConnection mediaScannerConnection = null;
   private String path;
-  private OnScannedListener listener;
+  OnScannedListener listener;
 
   public ContentUriScanner(Context context, OnScannedListener listener)
   {
