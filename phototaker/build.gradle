@@ -64,7 +64,7 @@ dependencies {
   compileOnly "com.android.support:support-core-utils:$ANDROID_SUPPORT_VERSION"
   compileOnly "com.android.support:support-fragment:$ANDROID_SUPPORT_VERSION"
   testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.21.0'
+  testImplementation 'org.mockito:mockito-core:2.23.0'
   testImplementation "com.android.support:support-fragment:$ANDROID_SUPPORT_VERSION"
 }
 

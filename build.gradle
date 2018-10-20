@@ -46,8 +46,8 @@ ext {
   JAVA_VERSION = JavaVersion.VERSION_1_7
 
   ANDROID_MIN_SDK = 19
-  ANDROID_TARGET_SDK = 27
-  ANDROID_SUPPORT_VERSION = "27.1.1"
+  ANDROID_TARGET_SDK = 28
+  ANDROID_SUPPORT_VERSION = "28.0.0"
 
   githubRepo = 'piruin/phototaker'
 }
