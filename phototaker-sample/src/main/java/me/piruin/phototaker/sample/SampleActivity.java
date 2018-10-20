@@ -26,10 +26,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+
 import java.io.File;
 import java.util.ArrayList;
+
 import me.piruin.phototaker.PhotoSize;
 import me.piruin.phototaker.PhotoTaker;
 import me.piruin.phototaker.PhotoTakerListener;
@@ -75,7 +78,7 @@ public class SampleActivity extends AppCompatActivity {
                 imageView.setEnabled(false);
               }
             })
-            .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+            .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .check();
   }
 

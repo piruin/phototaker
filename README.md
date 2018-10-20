@@ -68,9 +68,11 @@ Add `res/xml/provider_paths.xml`
 
 ```
 
-### Request for Read-External-Storage permission
+### Request for Read/Write-External-Storage permission
 
 To read content Uri of crop image, your user must grant `READ_EXTERNAL_STORAGE` permission.
+and for *pick image* for gallery your user must grant `WRITE_EXTERNAL_STORAGE` instead.
+
 There are many great library waiting to help you handle that.
 
 ## License
