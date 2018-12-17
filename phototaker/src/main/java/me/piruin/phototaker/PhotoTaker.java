@@ -35,6 +35,7 @@ import me.piruin.phototaker.intent.CaptureIntent;
 import me.piruin.phototaker.intent.CropIntent;
 import me.piruin.phototaker.intent.PickImageIntent;
 
+@SuppressWarnings("WeakerAccess")
 public class PhotoTaker {
   public static final int CAPTURE_IMAGE = 1030;
   public static final int CROP_IMAGE = 1031;
@@ -126,9 +127,8 @@ public class PhotoTaker {
     }
   }
 
-  public boolean doCropImage(@NonNull Uri uri) {
+  public void doCropImage(@NonNull Uri uri) {
     cropAction.action(uri);
-    return true;
   }
 
   public void showDialog() {
@@ -196,6 +196,7 @@ public class PhotoTaker {
     }
 
     @Override public void action(Uri data) {
+      //noinspection ResultOfMethodCallIgnored
       captureTempDir.mkdirs();
       File temp = BitmapUtils.getFile(captureTempDir, tempFileName);
 

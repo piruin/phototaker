@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -95,7 +96,7 @@ public class SampleActivity extends AppCompatActivity {
           .show();
       }
 
-      @Override public void onFinish(Intent intent) {
+      @Override public void onFinish(@NonNull Intent intent) {
         if (intent.getData() != null) {
           imageView.setImageURI(intent.getData());
         } else if (intent.getParcelableExtra("data") != null) {

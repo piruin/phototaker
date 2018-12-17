@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -52,10 +53,11 @@ final class BitmapUtils {
     return null;
   }
 
-  public static File getFile(File dir, String name) {
+  static File getFile(File dir, String name) {
     File output = new File(dir, name);
     if (!output.exists()) {
       try {
+        //noinspection ResultOfMethodCallIgnored
         output.createNewFile();
       } catch (IOException e) {
         Log.e("PhotoTaker", "Error create "+output.getAbsolutePath());
