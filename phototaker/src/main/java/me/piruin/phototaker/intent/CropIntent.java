@@ -23,15 +23,16 @@ import android.support.annotation.NonNull;
 
 import me.piruin.phototaker.PhotoSize;
 
+@SuppressWarnings("WeakerAccess")
 public class CropIntent extends Intent {
 
   @NonNull public static final String ACTION_CROP = "com.android.camera.action.CROP";
-  @NonNull public static final PhotoSize DEFAULT_SIZE = new PhotoSize(600, 600);
+  @NonNull public static final PhotoSize DEFAULT_SIZE = new PhotoSize(1024, 1024);
 
   public CropIntent(@NonNull Uri uri) {
     super(ACTION_CROP);
     setDataAndType(uri, "image/*");
-    putExtra("noFaceDetection", true);
+    putExtra("noFaceDetection", false);
     putExtra("scale", true);
     putExtra("return-data", true);
     setOutput(DEFAULT_SIZE);
